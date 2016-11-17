@@ -1,0 +1,7 @@
+- name: restart ssh
+  service: "name={{ ssh_name }} state=restarted"
+  when: ansible_virtualization_type != 'docker'
+  become: yes
+
+- name: regen keys
+  shell: "ssh-keygen -A"

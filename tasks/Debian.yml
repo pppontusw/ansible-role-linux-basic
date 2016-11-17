@@ -1,0 +1,45 @@
+- name: run APT update
+  apt: update_cache=yes cache_valid_time=3600
+  tags: apt
+
+- name: run APT upgrade
+  apt: upgrade=safe
+  tags: apt
+
+- name: install VirtualBox packages
+  apt: name={{item}} state=present
+  with_items:
+    - dkms
+    - build-essential
+  when: ansible_bios_version == 'VirtualBox' # run only if the OS is running on VirtualBox as these are required for guest tools
+  tags: apt
+
+- name: install ntp
+  apt: name={{item}} state=present
+  with_items:
+    - ntp
+  when: ansible_virtualization_type != 'docker' and ansible_lsb.major_release|int >6
+  tags: 
+    - ntp
+    - apt
+
+- name: activate ntp
+  service:
+    name: ntp
+    state: started
+    enabled: yes
+  when: ansible_virtualization_type != 'docker' and ansible_lsb.major_release|int >6
+  tags: ntp
+
+- name: install other apps
+  apt: name={{item}} state=present
+  with_items: "{{basic_debian_apps|default([])}}"
+  tags: 
+    - apt
+
+- name: install VMware tools
+  apt: name={{item}} state=present
+  with_items:
+    - open-vm-tools
+  when: ansible_product_name == 'VMware Virtual Platform' and ansible_lsb.major_release|int > 6 # run only if the OS is running on VMWare
+  tags: apt

@@ -1,0 +1,32 @@
+- name: create account
+  user: name={{item.name}} shell=/bin/bash
+  with_items: "{{linux_users}}"
+  tags:
+    - account
+    - ssh
+
+- name: add authorized keys
+  authorized_key: user={{item.name}} key={{item.pubkey}}
+  with_items: "{{linux_users}}"
+  tags: 
+    - ssh
+    - account
+
+- name: ensure sudo is installed
+  apt: name=sudo state=present
+  when: ansible_os_family == 'Debian'
+  tags: 
+    - ssh
+    - account
+
+- name: add configured user accounts to passwordless sudoers
+  lineinfile:
+    dest: /etc/sudoers
+    regexp: '^{{ item.name }}'
+    line: '{{ item.name }} ALL=(ALL) NOPASSWD: ALL'
+    state: present
+    validate: '/usr/sbin/visudo -cf %s'
+  with_items: "{{linux_users}}"
+  tags: 
+    - ssh
+    - account

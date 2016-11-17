@@ -1,0 +1,27 @@
+# this is a dictionary of your usernames and their public keys
+linux_basic_users: 
+  - { name: 'me', pubkey: 'key' }
+
+# ssh configuration
+ssh_port: 22
+ssh_password_authentication: "no"
+ssh_permit_root_login: "no"
+
+# uncomment this to add the ciphers required for Veeam Backup & Replication on Debian 8 
+#add_veeam_ssh_ciphers: true
+
+# uncomment this to stop requiretty for sudo on RHEL
+#no_sudo_requiretty: true
+
+# uncomment this to add the epel repo to RedHat distributions
+add_epel_repo: true
+
+# use this if you do not have sudo privilegies on your account and need to su to root (only applicable when your user is not sudo by default) 
+#no_sudo_user: true
+no_sudo_su_user: root
+
+# list of apps to install on rhel
+#basic_redhat_apps:
+
+# list of apps to install on debian
+#basic_debian_apps:

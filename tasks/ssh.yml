@@ -1,0 +1,33 @@
+- name: update SSH configuration # disable password login and root login via SSH
+  lineinfile:
+    dest: "{{ ssh_config_path }}"
+    regexp: "{{ item.regexp }}"
+    line: "{{ item.line }}"
+    state: present
+  with_items:
+    - regexp: "^PasswordAuthentication"
+      line: "PasswordAuthentication {{ ssh_password_authentication }}"
+    - regexp: "^PermitRootLogin"
+      line: "PermitRootLogin {{ ssh_permit_root_login }}"
+    - regexp: "^Port"
+      line: "Port {{ ssh_port }}"
+  notify:
+    - restart ssh
+  tags: ssh
+
+- name: update SSH algorithms # this is done because it's required by Veeam Backup & Replication - if this support is not needed this play can be skipped
+  lineinfile:
+    dest: "{{ ssh_config_path }}"
+    regexp: "{{ item.regexp }}"
+    line: "{{ item.line }}"
+    state: present
+  with_items:
+    - regexp: "^KexAlgorithms"
+      line: "KexAlgorithms diffie-hellman-group1-sha1,curve25519-sha256@libssh.org,ecdh-sha2-nistp256,ecdh-sha2-nistp384,ecdh-sha2-nistp521,diffie-hellman-group-exchange-sha256,diffie-hellman-group14-sha1"
+    - regexp: "^Ciphers"
+      line: "Ciphers 3des-cbc,blowfish-cbc,aes128-cbc,aes128-ctr,aes256-ctr"
+  when: (ansible_os_family == "Debian" and ansible_lsb.major_release|int == 8) and add_veeam_ssh_ciphers is defined
+  notify:
+    - regen keys
+    - restart ssh
+  tags: ssh

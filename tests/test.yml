@@ -1,0 +1,9 @@
+- name: standard configuration
+  hosts: all
+  vars: 
+    linux_users:
+      - name: test
+        pubkey: ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDBxwuaWkJyKlSkkoO8/1Wi7WX2hB65MjneatGijUhn5I1r0ETcpF8DXuJRaFv/pr90wfO33VDn3eMgj6b9MUV8SUmU6m6pe6JfQjlNYwSaOgOzQwAo7Lf7jigQ6fSf0UiY+mKFt1N9cEubIbHBFSAkJP52NVTqzYLTnjO6xGizQXWd6b9JBVT6Qq1pkneXf88WiH88AwG2gClNztzbN8PiKtkZXxhxzYeCNj9/pRBH3u+Dtn65s+6GQQZw6X2y7E3QgFP1IWil0IpQRWOjGbqbon7PAGYPmKQRlUwhVBJ30+NzCPBHl5w+1xjwMsoZp4Oz53xxjR4VgLNiibQvtionYSA0roZsEbDt+98bGmBuDi9NU3DW0lvgcrzV3CQWr/U2k5q1aRXEehQUdi5VByYHyEe4XEffEGjWLWyPxwkJg+wDYtjsgJzQRVhp1yP/KPVQSfGMT1T3iiMwmSQPVeVcw+6rkeIy4Tty8maE+3Jys/KRJrCTd9snVk88rZ8rkL3m+SGTUiy/8uBNJaaKYdJZVIlho7qTUBzKn3bTzoZZMeh5KFfZLmmmS4k1108SYpTMoDAYrZjAV6mmBcjaDije7dloM0OfAGldo/VQgPzV61CJ26djl6IwHJdrSK09YXfFr4jw5JGEEnu2OBcggLvJVbY9TqCsAD9y8og9S21VUQ== pontus@xps-15
+  roles: 
+    - linux-basic
+  become: yes

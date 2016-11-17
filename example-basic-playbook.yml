@@ -1,0 +1,6 @@
+# example-basic-playbook.yml
+# sets up basic account and security configuration
+- name: basic configuration
+  hosts: all 
+  roles: 
+    - linux-basic

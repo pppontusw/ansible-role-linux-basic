@@ -1,0 +1,50 @@
+- name: include OS-specific variables # redhat or debian type distros
+  include_vars: "{{ ansible_os_family }}.yml"
+  tags: 
+    - ssh
+    - users
+    - apt
+    - yum
+    - packages
+
+- name: install selinux bindings # this is required for hosts with SELinux enabled
+  yum: name=libselinux-python state=present
+  when: ansible_os_family == 'RedHat'
+  become: yes
+  
+- include: create.yml # we go here as sudo if we can i.e. on a distro that has sudo by default or after the initial setup is done and we've added ourselves as sudoers
+  when: no_sudo_user is not defined
+  become: yes
+  tags: 
+    - users
+    - create
+    - user
+
+- include: create.yml # if we need to we will SU 
+  when: no_sudo_user is defined
+  become: yes
+  become_user: "{{no_sudo_su_user}}"
+  become_method: su
+  tags: 
+    - users
+    - create
+    - user
+
+- include: ssh.yml
+  become: yes
+  tags: ssh
+
+- include: "{{ansible_os_family}}.yml"
+  become: yes
+  tags: 
+    - apt
+    - yum
+    - packages
+
+- name: no requiretty
+  lineinfile:
+    dest: /etc/sudoers
+    regexp: '^Defaults    requiretty$'
+    state: absent
+    validate: '/usr/sbin/visudo -cf %s'
+  when: ansible_os_family == 'RedHat'

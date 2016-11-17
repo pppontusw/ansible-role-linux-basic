@@ -1,0 +1,49 @@
+- name: install EPEL repo
+  yum:
+    name: "{{ epel_repo_url }}"
+    state: present
+  register: result
+  until: '"failed" not in result'
+  retries: 5
+  delay: 10
+  when: add_epel_repo is defined
+  tags: yum
+
+- name: import EPEL key
+  rpm_key:
+    key: "{{ epel_repo_gpg_key_url }}"
+    state: present
+  when: add_epel_repo is defined
+  tags: yum
+
+- name: upgrade all packages
+  yum: name=* state=latest
+  tags: yum
+
+- name: install ntp
+  yum: name={{item}} state=present
+  with_items:
+    - ntp
+  tags: 
+    - yum
+    - ntp
+
+- name: activate ntp
+  service:
+    name: ntpd
+    state: started
+    enabled: yes
+  when: ansible_virtualization_type != 'docker'
+
+- name: install other apps
+  yum: name={{item}} state=present
+  with_items: "{{basic_redhat_apps|default([])}}"
+  tags: 
+    - yum
+
+- name: install VMware tools
+  yum: name={{item}} state=present
+  with_items:
+    - open-vm-tools
+  when: ansible_product_name == 'VMware Virtual Platform' # run only if the OS is running on VMWare
+  tags: yum
